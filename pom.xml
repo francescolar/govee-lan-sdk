@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.laaer</groupId>
+    <artifactId>govee-lan-sdk</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Govee LAN SDK</name>
+    <description>Lightweight Java library to control Govee smart devices via the official LAN UDP API. No cloud, no API key.</description>
+    <url>https://github.com/francescolar/touch-portal-govee-lan-plugin</url>
+    <inceptionYear>2026</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>laaer</id>
+            <name>Francesco La Ruffa</name>
+            <email>laruffafrancesco1@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/francescolar/touch-portal-govee-lan-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/francescolar/touch-portal-govee-lan-plugin.git</developerConnection>
+        <url>https://github.com/francescolar/touch-portal-govee-lan-plugin</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/francescolar/touch-portal-govee-lan-plugin/issues</url>
+    </issueManagement>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+
+            <!-- sources jar — required by Maven Central -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals><goal>jar-no-fork</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- javadoc jar — required by Maven Central -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals><goal>jar</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- publishes to the new Sonatype Central portal (replaces old OSSRH) -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.6.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                    <!-- set to true when you want to auto-release, false = manual review on the portal -->
+                    <autoPublish>false</autoPublish>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- GPG signing in a separate profile so normal builds don't require the key -->
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals><goal>sign</goal></goals>
+                                <configuration>
+                                    <!-- avoids interactive passphrase prompt in CI -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
