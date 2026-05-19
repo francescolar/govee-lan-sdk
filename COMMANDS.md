@@ -31,12 +31,15 @@ Requirements before running this:
 ```
 docker run --rm \
   -v "$HOME/.m2:/root/.m2" \
-  -v "$HOME/.gnupg:/root/.gnupg" \
+  -v "$HOME/.gnupg:/tmp/gnupg-src:ro" \
   -v "$(pwd):/app" \
   -w /app \
+  -e MAVEN_GPG_PASSPHRASE="YOUR_PASSPHRASE" \
   maven:3.9-eclipse-temurin-17 \
-  mvn clean deploy -Prelease
+  bash -c "cp -r /tmp/gnupg-src /tmp/gnupg && chmod 700 /tmp/gnupg && chmod 600 /tmp/gnupg/* && GNUPGHOME=/tmp/gnupg mvn clean deploy -Prelease -s /root/.m2/settings-docker.xml"
 ```
+
+Replace `YOUR_PASSPHRASE` with your GPG key passphrase. The `cp` step is needed because Docker mounts files as your host user, but the container runs as root — GPG refuses to use a homedir it doesn't own.
 
 After the command completes, go to https://central.sonatype.com/publishing/deployments, find the deployment and click **Publish**. It will appear on Maven Central within ~30 minutes.
 
